@@ -1,39 +1,101 @@
 import { LitElement, html, css } from 'lit'
 
-import '@material/web/button/text-button.js'
-
 class AccountNavbar extends LitElement {
 
   static styles = css`
+    * {
+      box-sizing: border-box;
+    }
+
     nav {
-      background: #6750a4;
-      padding: 18px 30px;
+      width: 100%;
+      height: 76px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
 
       display: flex;
       align-items: center;
       justify-content: space-between;
 
-      color: white;
+      padding: 0 50px;
+      font-family: Arial, sans-serif;
     }
-      md-text-button:hover {
-  background: #4f378b;
-}
 
-md-text-button:focus {
-  background: #dcd7ea;
-}
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #111827;
+    }
 
-    h2 {
-      margin: 0;
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .blue {
+      color: #2563eb;
     }
 
     .links {
       display: flex;
-      gap: 8px;
+      align-items: center;
+      gap: 12px;
     }
 
-    md-text-button {
-      --md-text-button-label-text-color: white;
+    button {
+      border: none;
+      background: transparent;
+      color: #475569;
+
+      padding: 11px 16px;
+      border-radius: 8px;
+
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover,
+    button:focus {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .logout {
+      color: #64748b;
+    }
+
+    @media (max-width: 700px) {
+      nav {
+        padding: 0 15px;
+      }
+
+      .logo {
+        font-size: 18px;
+      }
+
+      .logo-icon {
+        width: 35px;
+        height: 35px;
+      }
+
+      button {
+        padding: 8px;
+        font-size: 13px;
+      }
     }
   `
 
@@ -60,29 +122,30 @@ md-text-button:focus {
     return html`
       <nav>
 
-        <h2>My Account</h2>
+        <div class="logo">
+          <div class="logo-icon">E</div>
+          <span>Electro<span class="blue">Shop</span></span>
+        </div>
 
         <div class="links">
 
-          <md-text-button
-            @click=${() => this.navigate('profile')}>
+          <button @click=${() => this.navigate('profile')}>
             Profile
-          </md-text-button>
+          </button>
 
-          <md-text-button
-            @click=${() => this.navigate('orders')}>
+          <button @click=${() => this.navigate('orders')}>
             Orders
-          </md-text-button>
+          </button>
 
-          <md-text-button
-            @click=${() => this.navigate('wishlist')}>
+          <button @click=${() => this.navigate('wishlist')}>
             Wishlist
-          </md-text-button>
+          </button>
 
-          <md-text-button
+          <button
+            class="logout"
             @click=${this.logout}>
             Logout
-          </md-text-button>
+          </button>
 
         </div>
 
@@ -91,7 +154,4 @@ md-text-button:focus {
   }
 }
 
-customElements.define(
-  'account-navbar',
-  AccountNavbar
-)
+customElements.define('account-navbar', AccountNavbar)

@@ -1,96 +1,100 @@
 import { LitElement, html, css } from 'lit'
-
-import { wishlist } from '../data/mock-data.js'
-
-import '@material/web/button/filled-button.js'
-import '@material/web/button/outlined-button.js'
+import '../components/account-navbar.js'
 
 class WishlistPage extends LitElement {
 
-  static properties = {
-    items: { type: Array }
-  }
-
-  constructor() {
-    super()
-
-    this.items = [...wishlist]
-  }
-
   static styles = css`
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 20px;
+    * {
+      box-sizing: border-box;
+    }
+
+    :host {
+      display: block;
+      font-family: Arial, sans-serif;
+      background: #f6f8fc;
+      min-height: 100vh;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 45px 25px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: #111827;
+      font-size: 30px;
     }
 
     .subtitle {
-      color: #625b71;
+      color: #64748b;
       margin-bottom: 30px;
     }
 
-    .grid {
+    .products {
       display: grid;
-
-      grid-template-columns:
-        repeat(auto-fit, minmax(220px, 1fr));
-
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
     }
 
     .product {
       background: white;
-
-      padding: 25px;
-
-      border-radius: 18px;
-
-      box-shadow:
-        0 4px 15px rgba(0,0,0,0.07);
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 22px;
     }
 
     .image {
-      height: 120px;
-
-      background: #eee8f4;
-
-      border-radius: 14px;
-
+      height: 150px;
+      background: #f1f5f9;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-
       font-size: 45px;
+      margin-bottom: 18px;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      color: #111827;
     }
 
     .price {
-      color: #6750a4;
-      font-size: 20px;
+      color: #2563eb;
       font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 18px;
     }
 
-    .buttons {
-      display: grid;
-      gap: 10px;
+    button {
+      width: 100%;
+      padding: 11px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
-      margin-top: 20px;
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    @media (max-width: 750px) {
+      .products {
+        grid-template-columns: 1fr;
+      }
     }
   `
 
-  removeItem(id) {
-    this.items =
-      this.items.filter(
-        item => item.id !== id
-      )
-  }
-
-  addToCart(name) {
-    alert(`${name} added to cart`)
-  }
-
   render() {
     return html`
-      <div class="container">
+
+
+      <main>
 
         <h1>My Wishlist</h1>
 
@@ -98,65 +102,34 @@ class WishlistPage extends LitElement {
           Products you saved for later
         </div>
 
-        ${this.items.length === 0
-          ? html`
-              <p>Your wishlist is empty.</p>
-            `
-          : html`
-              <div class="grid">
+        <div class="products">
 
-                ${this.items.map(
-                  item => html`
+          <div class="product">
+            <div class="image">🎧</div>
+            <h3>Wireless Headphones</h3>
+            <div class="price">$79.99</div>
+            <button>Add to Cart</button>
+          </div>
 
-                    <div class="product">
+          <div class="product">
+            <div class="image">⌚</div>
+            <h3>Smart Watch</h3>
+            <div class="price">$149.99</div>
+            <button>Add to Cart</button>
+          </div>
 
-                      <div class="image">
-                        ♡
-                      </div>
+          <div class="product">
+            <div class="image">📱</div>
+            <h3>Smartphone</h3>
+            <div class="price">$699.99</div>
+            <button>Add to Cart</button>
+          </div>
 
-                      <h3>
-                        ${item.name}
-                      </h3>
+        </div>
 
-                      <div class="price">
-                        $${item.price.toFixed(2)}
-                      </div>
-
-                      <div class="buttons">
-
-                        <md-filled-button
-                          @click=${() =>
-                            this.addToCart(
-                              item.name
-                            )}>
-                          Add to Cart
-                        </md-filled-button>
-
-                        <md-outlined-button
-                          @click=${() =>
-                            this.removeItem(
-                              item.id
-                            )}>
-                          Remove
-                        </md-outlined-button>
-
-                      </div>
-
-                    </div>
-
-                  `
-                )}
-
-              </div>
-            `
-        }
-
-      </div>
+      </main>
     `
   }
 }
 
-customElements.define(
-  'wishlist-page',
-  WishlistPage
-)
+customElements.define('wishlist-page', WishlistPage)

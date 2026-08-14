@@ -1,84 +1,112 @@
 import { LitElement, html, css } from 'lit'
 
-import '@material/web/textfield/outlined-text-field.js'
-import '@material/web/button/filled-button.js'
-import '@material/web/button/text-button.js'
-
 class RegisterPage extends LitElement {
 
   static styles = css`
+    * {
+      box-sizing: border-box;
+    }
+
+    :host {
+      display: block;
+      font-family: Arial, sans-serif;
+    }
+
+    .page {
+      min-height: 100vh;
+      background: #f6f8fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
     .card {
-      width: 450px;
-      max-width: 85%;
-      margin: 40px auto;
-      padding: 35px;
-
+      width: 100%;
+      max-width: 500px;
       background: white;
+      padding: 40px;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+    }
 
-      border-radius: 22px;
+    .logo {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 25px;
+    }
 
-      box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.1);
+    .blue {
+      color: #2563eb;
     }
 
     h1 {
-      margin-bottom: 8px;
+      margin: 0 0 8px;
+      color: #111827;
     }
 
-    p {
-      color: #625b71;
+    .subtitle {
+      color: #64748b;
+      margin-bottom: 25px;
     }
 
-    form {
-      display: grid;
-      gap: 16px;
-
-      margin-top: 25px;
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #374151;
+      font-weight: 600;
+      font-size: 14px;
     }
 
-    md-outlined-text-field {
+    input {
       width: 100%;
+      padding: 13px;
+      margin-bottom: 17px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      font-size: 15px;
+      outline: none;
     }
 
-    md-filled-button {
+    input:focus {
+      border-color: #2563eb;
+    }
+
+    .register-btn {
       width: 100%;
+      border: none;
+      background: #2563eb;
+      color: white;
+      padding: 14px;
+      border-radius: 9px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .register-btn:hover {
+      background: #1d4ed8;
     }
 
     .login {
       text-align: center;
       margin-top: 20px;
+      color: #64748b;
+    }
+
+    .login button {
+      border: none;
+      background: transparent;
+      color: #2563eb;
+      cursor: pointer;
+      font-weight: 600;
     }
   `
 
-  register(event) {
-    event.preventDefault()
-
-    const data =
-      new FormData(event.target)
-
-    const name =
-      data.get('name')
-
-    const email =
-      data.get('email')
-
-    const password =
-      data.get('password')
-
-    const confirmPassword =
-      data.get('confirmPassword')
-
-    if (password !== confirmPassword) {
-      alert('Passwords do not match')
-      return
-    }
-
+  register() {
     this.dispatchEvent(
-      new CustomEvent('register-user', {
-        detail: {
-          name,
-          email
-        },
+      new CustomEvent('login-user', {
         bubbles: true,
         composed: true
       })
@@ -87,7 +115,8 @@ class RegisterPage extends LitElement {
 
   login() {
     this.dispatchEvent(
-      new CustomEvent('go-login', {
+      new CustomEvent('navigate-page', {
+        detail: 'login',
         bubbles: true,
         composed: true
       })
@@ -96,66 +125,40 @@ class RegisterPage extends LitElement {
 
   render() {
     return html`
-      <div class="card">
+      <div class="page">
+        <div class="card">
 
-        <h1>Create Account</h1>
+          <div class="logo">
+            Electro<span class="blue">Shop</span>
+          </div>
 
-        <p>
-          Create your account to start shopping
-        </p>
+          <h1>Create Account</h1>
+          <div class="subtitle">Create your ElectroShop account</div>
 
-        <form @submit=${this.register}>
+          <label>Full Name</label>
+          <input type="text" placeholder="Enter your full name">
 
-          <md-outlined-text-field
-            name="name"
-            label="Full Name"
-            required>
-          </md-outlined-text-field>
+          <label>Email</label>
+          <input type="email" placeholder="Enter your email">
 
-          <md-outlined-text-field
-            name="email"
-            label="Email"
-            type="email"
-            required>
-          </md-outlined-text-field>
+          <label>Password</label>
+          <input type="password" placeholder="Create a password">
 
-          <md-outlined-text-field
-            name="password"
-            label="Password"
-            type="password"
-            required>
-          </md-outlined-text-field>
-
-          <md-outlined-text-field
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            required>
-          </md-outlined-text-field>
-
-          <md-filled-button type="submit">
+          <button
+            class="register-btn"
+            @click=${this.register}>
             Create Account
-          </md-filled-button>
+          </button>
 
-        </form>
-
-        <div class="login">
-
-          Already have an account?
-
-          <md-text-button
-            @click=${this.login}>
-            Login
-          </md-text-button>
+          <div class="login">
+            Already have an account?
+            <button @click=${this.login}>Login</button>
+          </div>
 
         </div>
-
       </div>
     `
   }
 }
 
-customElements.define(
-  'register-page',
-  RegisterPage
-)
+customElements.define('register-page', RegisterPage)

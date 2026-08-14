@@ -7,46 +7,73 @@ import '@material/web/button/text-button.js'
 class LoginPage extends LitElement {
 
   static styles = css`
+    * {
+      box-sizing: border-box;
+    }
+
+    :host {
+      display: block;
+      min-height: 100vh;
+      background: #f6f8fc;
+      font-family: Arial, sans-serif;
+      padding-top: 1px;
+    }
+
     .card {
-      width: 400px;
-      max-width: 85%;
-      margin: 60px auto;
-      padding: 35px;
+      width: 430px;
+      max-width: 90%;
+      margin: 80px auto;
+      padding: 40px;
 
       background: white;
-
-      border-radius: 22px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
 
       box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.1);
+        0 8px 25px rgba(0, 0, 0, 0.06);
     }
 
     h1 {
-      margin-bottom: 8px;
+      margin: 0 0 8px;
+      font-size: 30px;
+      color: #111827;
     }
 
     .subtitle {
-      color: #625b71;
-      margin-bottom: 25px;
+      color: #64748b;
+      margin-bottom: 28px;
+      font-size: 15px;
     }
 
     form {
       display: grid;
-      gap: 18px;
+      gap: 20px;
     }
 
     md-outlined-text-field {
       width: 100%;
+
+      --md-outlined-text-field-focus-outline-color: #2563eb;
+      --md-outlined-text-field-focus-label-text-color: #2563eb;
     }
 
     md-filled-button {
       width: 100%;
+
+      --md-filled-button-container-color: #2563eb;
+      --md-filled-button-label-text-color: white;
+      --md-filled-button-container-height: 48px;
     }
 
     .register {
-      margin-top: 20px;
+      margin-top: 24px;
       text-align: center;
-      color: #625b71;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    md-text-button {
+      --md-text-button-label-text-color: #2563eb;
     }
   `
 
@@ -69,7 +96,9 @@ class LoginPage extends LitElement {
 
     this.dispatchEvent(
       new CustomEvent('login-user', {
-        detail: { email },
+        detail: {
+          email: email
+        },
         bubbles: true,
         composed: true
       })
@@ -118,14 +147,12 @@ class LoginPage extends LitElement {
         </form>
 
         <div class="register">
-
           Don't have an account?
 
           <md-text-button
             @click=${this.register}>
             Register
           </md-text-button>
-
         </div>
 
       </div>

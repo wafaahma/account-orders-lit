@@ -1,125 +1,139 @@
-import { LitElement, html, css } from 'lit'
-
-import { orders } from '../data/mock-data.js'
-
-import '@material/web/button/outlined-button.js'
+ import { LitElement, html, css } from 'lit'
 
 class OrdersPage extends LitElement {
 
   static styles = css`
+    :host {
+      display: block;
+      background: #f6f8fc;
+      min-height: calc(100vh - 100px);
+      font-family: Arial, Helvetica, sans-serif;
+      color: #111827;
+    }
+
     .container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 20px;
+      padding: 55px 40px;
     }
 
     h1 {
-      margin-bottom: 8px;
+      margin: 0;
+      font-size: 34px;
     }
 
     .subtitle {
-      color: #625b71;
-      margin-bottom: 30px;
+      margin-top: 8px;
+      margin-bottom: 35px;
+      color: #64748b;
+      font-size: 17px;
     }
 
-    .order {
+    .order-card {
       background: white;
-
-      margin-bottom: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
       padding: 25px;
-
-      border-radius: 18px;
-
-      box-shadow:
-        0 4px 15px rgba(0,0,0,0.07);
+      margin-bottom: 20px;
     }
 
-    .top {
+    .order-top {
       display: flex;
       justify-content: space-between;
-      gap: 20px;
+      align-items: center;
     }
 
-    .id {
-      font-weight: bold;
+    .order-number {
       font-size: 18px;
+      font-weight: bold;
     }
 
     .status {
-      color: #6750a4;
+      background: #dcfce7;
+      color: #15803d;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 13px;
       font-weight: bold;
     }
 
-    .details {
-      margin-top: 20px;
+    .processing {
+      background: #fef3c7;
+      color: #b45309;
+    }
 
+    .order-info {
       display: flex;
       justify-content: space-between;
-
-      color: #625b71;
+      margin-top: 22px;
     }
 
-    .total {
+    .date {
+      color: #64748b;
+    }
+
+    .price {
+      color: #2563eb;
       font-weight: bold;
-      color: #1d1b20;
+      font-size: 18px;
     }
   `
-
-  viewOrder(id) {
-    alert(`Viewing ${id}`)
-  }
 
   render() {
     return html`
       <div class="container">
 
-        <h1>Order History</h1>
+        <h1>My Orders</h1>
 
         <div class="subtitle">
-          View and manage your previous orders
+          View and track your recent orders
         </div>
 
-        ${orders.map(
-          order => html`
+        <div class="order-card">
 
-            <div class="order">
-
-              <div class="top">
-
-                <span class="id">
-                  ${order.id}
-                </span>
-
-                <span class="status">
-                  ${order.status}
-                </span>
-
-              </div>
-
-              <div class="details">
-
-                <span>
-                  ${order.date}
-                </span>
-
-                <span class="total">
-                  $${order.total.toFixed(2)}
-                </span>
-
-              </div>
-
-              <br>
-
-              <md-outlined-button
-                @click=${() =>
-                  this.viewOrder(order.id)}>
-                View Details
-              </md-outlined-button>
-
+          <div class="order-top">
+            <div class="order-number">
+              Order #1001
             </div>
 
-          `
-        )}
+            <div class="status">
+              Delivered
+            </div>
+          </div>
+
+          <div class="order-info">
+            <div class="date">
+              August 10, 2026
+            </div>
+
+            <div class="price">
+              $129.99
+            </div>
+          </div>
+
+        </div>
+
+        <div class="order-card">
+
+          <div class="order-top">
+            <div class="order-number">
+              Order #1002
+            </div>
+
+            <div class="status processing">
+              Processing
+            </div>
+          </div>
+
+          <div class="order-info">
+            <div class="date">
+              August 14, 2026
+            </div>
+
+            <div class="price">
+              $249.99
+            </div>
+          </div>
+
+        </div>
 
       </div>
     `
