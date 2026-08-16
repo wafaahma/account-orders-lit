@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit'
 
+import './pages/login-page.js'
 import './pages/profile-page.js'
 import './pages/orders-page.js'
 import './pages/wishlist-page.js'
@@ -18,15 +19,31 @@ class AccountOrdersApp extends LitElement {
   constructor() {
     super()
 
-    this.page = 'profile'
+    const path = window.location.pathname
 
-    // أول مرة المستخدم يكون عنده حساب جاهز
-    if (localStorage.getItem('hasProfileData') === null) {
-      localStorage.setItem('hasProfileData', 'true')
+    if (path === '/login') {
+      this.page = 'login'
+    } else if (path === '/orders') {
+      this.page = 'orders'
+    } else if (path === '/wishlist') {
+      this.page = 'wishlist'
+    } else {
+      this.page = 'profile'
+    }
+
+    if (
+      localStorage.getItem('hasProfileData') === null
+    ) {
+      localStorage.setItem(
+        'hasProfileData',
+        'true'
+      )
     }
 
     this.hasProfileData =
-      localStorage.getItem('hasProfileData') === 'true'
+      localStorage.getItem(
+        'hasProfileData'
+      ) === 'true'
 
     if (this.hasProfileData) {
       this.user = { ...defaultUser }
@@ -54,6 +71,11 @@ class AccountOrdersApp extends LitElement {
     super.connectedCallback()
 
     this.addEventListener(
+      'login-user',
+      this.handleLogin
+    )
+
+    this.addEventListener(
       'navigate-page',
       this.handleNavigation
     )
@@ -73,6 +95,11 @@ class AccountOrdersApp extends LitElement {
     super.disconnectedCallback()
 
     this.removeEventListener(
+      'login-user',
+      this.handleLogin
+    )
+
+    this.removeEventListener(
       'navigate-page',
       this.handleNavigation
     )
@@ -85,6 +112,28 @@ class AccountOrdersApp extends LitElement {
     this.removeEventListener(
       'update-profile',
       this.handleProfileUpdate
+    )
+  }
+
+  handleLogin = (event) => {
+    this.user = {
+      ...this.user,
+      email: event.detail.email
+    }
+
+    this.hasProfileData = true
+
+    localStorage.setItem(
+      'hasProfileData',
+      'true'
+    )
+
+    window.parent.postMessage(
+      {
+        type: 'NAVIGATE',
+        path: '/'
+      },
+      '*'
     )
   }
 
@@ -106,7 +155,6 @@ class AccountOrdersApp extends LitElement {
   }
 
   handleLogout = () => {
-
     this.user = {
       name: '',
       email: '',
@@ -121,7 +169,6 @@ class AccountOrdersApp extends LitElement {
       'false'
     )
 
-    // يرجع Home تبعت Shell فرح
     window.parent.postMessage(
       {
         type: 'NAVIGATE',
@@ -132,6 +179,12 @@ class AccountOrdersApp extends LitElement {
   }
 
   renderPage() {
+
+    if (this.page === 'login') {
+      return html`
+        <login-page></login-page>
+      `
+    }
 
     if (this.page === 'orders') {
       return html`

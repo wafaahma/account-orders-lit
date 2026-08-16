@@ -35,13 +35,20 @@ class OrdersPage extends LitElement {
       border: 1px solid #e1e6ed;
       border-radius: 9px;
 
+      font-family: inherit;
       font-size: 14px;
       font-weight: 600;
 
       cursor: pointer;
+
+      transition:
+        background 0.2s,
+        color 0.2s,
+        border-color 0.2s;
     }
 
     .back-button:hover {
+      background: #f4f7fc;
       color: #2167dc;
       border-color: #2167dc;
     }
@@ -68,17 +75,30 @@ class OrdersPage extends LitElement {
 
       padding: 25px;
       margin-bottom: 20px;
+
+      transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+    }
+
+    .order-card:hover {
+      transform: translateY(-2px);
+
+      box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.05);
     }
 
     .order-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 15px;
     }
 
     .order-number {
       font-size: 18px;
       font-weight: bold;
+      color: #15233c;
     }
 
     .status {
@@ -100,6 +120,7 @@ class OrdersPage extends LitElement {
     .order-info {
       display: flex;
       justify-content: space-between;
+      align-items: center;
 
       margin-top: 22px;
       padding-top: 18px;
@@ -109,12 +130,13 @@ class OrdersPage extends LitElement {
 
     .date {
       color: #64748b;
+      font-size: 14px;
     }
 
     .price {
       color: #2563eb;
-      font-size: 18px;
       font-weight: bold;
+      font-size: 18px;
     }
 
     .empty {
@@ -127,6 +149,41 @@ class OrdersPage extends LitElement {
 
       text-align: center;
       color: #64748b;
+    }
+
+    .empty-icon {
+      font-size: 42px;
+      margin-bottom: 15px;
+    }
+
+    .empty-title {
+      margin-bottom: 7px;
+      color: #15233c;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .empty-text {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    @media (max-width: 700px) {
+      .container {
+        padding: 30px 18px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .order-top {
+        align-items: flex-start;
+      }
+
+      .order-info {
+        gap: 15px;
+      }
     }
   `
 
@@ -152,7 +209,8 @@ class OrdersPage extends LitElement {
 
         <button
           class="back-button"
-          @click=${this.backToProfile}>
+          @click=${this.backToProfile}
+        >
           ← Back to Profile
         </button>
 
@@ -165,6 +223,7 @@ class OrdersPage extends LitElement {
         ${
           hasProfileData
             ? html`
+
                 <div class="order-card">
 
                   <div class="order-top">
@@ -193,6 +252,7 @@ class OrdersPage extends LitElement {
 
                 </div>
 
+
                 <div class="order-card">
 
                   <div class="order-top">
@@ -220,13 +280,26 @@ class OrdersPage extends LitElement {
                   </div>
 
                 </div>
+
               `
             : html`
+
                 <div class="empty">
-                  📦
-                  <br><br>
-                  No orders available
+
+                  <div class="empty-icon">
+                    📦
+                  </div>
+
+                  <div class="empty-title">
+                    No orders available
+                  </div>
+
+                  <div class="empty-text">
+                    Your orders will appear here.
+                  </div>
+
                 </div>
+
               `
         }
 
