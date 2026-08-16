@@ -1,179 +1,241 @@
 import { LitElement, html, css } from 'lit'
 
-import './pages/login-page.js'
-import './pages/profile-page.js'
-import './pages/orders-page.js'
-import './pages/wishlist-page.js'
-
-import { user as defaultUser }
-  from './data/mock-data.js'
-
-class AccountOrdersApp extends LitElement {
-
-  static properties = {
-    page: { type: String },
-    user: { type: Object }
-  }
-
-  constructor() {
-    super()
-
-    this.user = { ...defaultUser }
-
-    const path = window.location.pathname
-
-    // ❤️ القلب من Shell
-    if (path === '/login') {
-      this.page = 'login'
-    }
-
-    // 👤 البروفايل
-    else if (path === '/profile') {
-      this.page = 'profile'
-    }
-
-    // Orders
-    else if (path === '/orders') {
-      this.page = 'orders'
-    }
-
-    // Wishlist
-    else if (path === '/wishlist') {
-      this.page = 'wishlist'
-    }
-
-    // /account العادي
-    else {
-      this.page = 'profile'
-    }
-  }
+class OrdersPage extends LitElement {
 
   static styles = css`
+    * {
+      box-sizing: border-box;
+    }
+
     :host {
       display: block;
-      min-height: 100vh;
       background: #f6f8fc;
+      min-height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
       color: #111827;
     }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 45px 40px;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      margin-bottom: 25px;
+      padding: 9px 14px;
+
+      background: white;
+      color: #526071;
+
+      border: 1px solid #e1e6ed;
+      border-radius: 9px;
+
+      font-size: 14px;
+      font-weight: 600;
+
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      color: #2167dc;
+      border-color: #2167dc;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      color: #15233c;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      margin-bottom: 35px;
+
+      color: #64748b;
+      font-size: 17px;
+    }
+
+    .order-card {
+      background: white;
+
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
+
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .order-number {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .status {
+      background: #dcfce7;
+      color: #15803d;
+
+      padding: 7px 14px;
+      border-radius: 20px;
+
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .processing {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .order-info {
+      display: flex;
+      justify-content: space-between;
+
+      margin-top: 22px;
+      padding-top: 18px;
+
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .date {
+      color: #64748b;
+    }
+
+    .price {
+      color: #2563eb;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .empty {
+      background: white;
+
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
+
+      padding: 45px;
+
+      text-align: center;
+      color: #64748b;
+    }
   `
 
-  connectedCallback() {
-    super.connectedCallback()
-
-    this.addEventListener(
-      'login-user',
-      this.handleLogin
-    )
-
-    this.addEventListener(
-      'navigate-page',
-      this.handleNavigation
-    )
-
-    this.addEventListener(
-      'logout-user',
-      this.handleLogout
-    )
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback()
-
-    this.removeEventListener(
-      'login-user',
-      this.handleLogin
-    )
-
-    this.removeEventListener(
-      'navigate-page',
-      this.handleNavigation
-    )
-
-    this.removeEventListener(
-      'logout-user',
-      this.handleLogout
-    )
-  }
-
-  handleLogin = (event) => {
-
-    this.user = {
-      ...this.user,
-      email: event.detail.email
-    }
-
-    localStorage.setItem(
-      'hasProfileData',
-      'true'
-    )
-
-    // بعد Login يرجع Home تبعت فرح
-    window.parent.postMessage(
-      {
-        type: 'NAVIGATE',
-        path: '/'
-      },
-      '*'
-    )
-  }
-
-  handleNavigation = (event) => {
-    this.page = event.detail
-  }
-
-  handleLogout = () => {
-
-    this.user = {
-      name: '',
-      email: '',
-      phone: '',
-      address: ''
-    }
-
-    localStorage.setItem(
-      'hasProfileData',
-      'false'
-    )
-
-    window.parent.postMessage(
-      {
-        type: 'NAVIGATE',
-        path: '/'
-      },
-      '*'
+  backToProfile() {
+    this.dispatchEvent(
+      new CustomEvent('navigate-page', {
+        detail: 'profile',
+        bubbles: true,
+        composed: true
+      })
     )
   }
 
   render() {
 
-    if (this.page === 'login') {
-      return html`
-        <login-page></login-page>
-      `
-    }
-
-    if (this.page === 'orders') {
-      return html`
-        <orders-page></orders-page>
-      `
-    }
-
-    if (this.page === 'wishlist') {
-      return html`
-        <wishlist-page></wishlist-page>
-      `
-    }
+    const hasProfileData =
+      localStorage.getItem(
+        'hasProfileData'
+      ) === 'true'
 
     return html`
-      <profile-page
-        .user=${this.user}>
-      </profile-page>
+      <div class="container">
+
+        <button
+          class="back-button"
+          @click=${this.backToProfile}>
+          ← Back to Profile
+        </button>
+
+        <h1>My Orders</h1>
+
+        <div class="subtitle">
+          View and track your recent orders
+        </div>
+
+        ${
+          hasProfileData
+            ? html`
+                <div class="order-card">
+
+                  <div class="order-top">
+
+                    <div class="order-number">
+                      Order #1001
+                    </div>
+
+                    <div class="status">
+                      Delivered
+                    </div>
+
+                  </div>
+
+                  <div class="order-info">
+
+                    <div class="date">
+                      August 10, 2026
+                    </div>
+
+                    <div class="price">
+                      $129.99
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="order-card">
+
+                  <div class="order-top">
+
+                    <div class="order-number">
+                      Order #1002
+                    </div>
+
+                    <div class="status processing">
+                      Processing
+                    </div>
+
+                  </div>
+
+                  <div class="order-info">
+
+                    <div class="date">
+                      August 14, 2026
+                    </div>
+
+                    <div class="price">
+                      $249.99
+                    </div>
+
+                  </div>
+
+                </div>
+              `
+            : html`
+                <div class="empty">
+                  📦
+                  <br><br>
+                  No orders available
+                </div>
+              `
+        }
+
+      </div>
     `
   }
 }
 
 customElements.define(
-  'account-orders-app',
-  AccountOrdersApp
+  'orders-page',
+  OrdersPage
 )
