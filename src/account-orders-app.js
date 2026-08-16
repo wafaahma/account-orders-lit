@@ -30,16 +30,9 @@ class AccountOrdersApp extends LitElement {
   static styles = css`
     :host {
       display: block;
-
       min-height: 100vh;
-
       background: #f6f4f8;
-
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
+      font-family: Arial, Helvetica, sans-serif;
       color: #1d1b20;
     }
   `
@@ -120,29 +113,35 @@ class AccountOrdersApp extends LitElement {
     this.page = 'login'
   }
 
-  handleLogin = (event) => {
-
-    this.user = {
-      ...this.user,
-      email: event.detail.email
-    }
-
-    this.loggedIn = true
-    this.page = 'profile'
+ handleLogin = (event) => {
+  this.user = {
+    ...this.user,
+    email: event.detail.email
   }
 
-  handleRegister = (event) => {
-
-    this.user = {
-      ...this.user,
-      name: event.detail.name,
-      email: event.detail.email
-    }
-
-    this.loggedIn = true
-    this.page = 'profile'
+  window.parent.postMessage(
+    {
+      type: 'NAVIGATE',
+      path: '/'
+    },
+    '*'
+  )
+}
+handleRegister = (event) => {
+  this.user = {
+    ...this.user,
+    name: event.detail.name,
+    email: event.detail.email
   }
 
+  window.parent.postMessage(
+    {
+      type: 'NAVIGATE',
+      path: '/'
+    },
+    '*'
+  )
+}
   handleNavigation = (event) => {
     this.page = event.detail
   }
@@ -153,7 +152,6 @@ class AccountOrdersApp extends LitElement {
   }
 
   renderPage() {
-
     switch (this.page) {
 
       case 'profile':
@@ -202,12 +200,10 @@ class AccountOrdersApp extends LitElement {
     }
 
     return html`
-
       <account-navbar>
       </account-navbar>
 
       ${this.renderPage()}
-
     `
   }
 }

@@ -109,14 +109,7 @@ class AccountNavbar extends LitElement {
     )
   }
 
-  logout() {
-    this.dispatchEvent(
-      new CustomEvent('logout-user', {
-        bubbles: true,
-        composed: true
-      })
-    )
-  }
+ 
 
   render() {
     return html`
@@ -141,11 +134,7 @@ class AccountNavbar extends LitElement {
             Wishlist
           </button>
 
-          <button
-            class="logout"
-            @click=${this.logout}>
-            Logout
-          </button>
+        
 
         </div>
 
