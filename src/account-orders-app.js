@@ -1,9 +1,5 @@
 import { LitElement, html, css } from 'lit'
 
-import './components/account-navbar.js'
-
-import './pages/login-page.js'
-import './pages/register-page.js'
 import './pages/profile-page.js'
 import './pages/orders-page.js'
 import './pages/wishlist-page.js'
@@ -15,25 +11,42 @@ class AccountOrdersApp extends LitElement {
 
   static properties = {
     page: { type: String },
-    loggedIn: { type: Boolean },
-    user: { type: Object }
+    user: { type: Object },
+    hasProfileData: { type: Boolean }
   }
 
   constructor() {
     super()
 
-    this.loggedIn = false
-    this.page = 'login'
-    this.user = { ...defaultUser }
+    this.page = 'profile'
+
+    // أول مرة المستخدم يكون عنده حساب جاهز
+    if (localStorage.getItem('hasProfileData') === null) {
+      localStorage.setItem('hasProfileData', 'true')
+    }
+
+    this.hasProfileData =
+      localStorage.getItem('hasProfileData') === 'true'
+
+    if (this.hasProfileData) {
+      this.user = { ...defaultUser }
+    } else {
+      this.user = {
+        name: '',
+        email: '',
+        phone: '',
+        address: ''
+      }
+    }
   }
 
   static styles = css`
     :host {
       display: block;
       min-height: 100vh;
-      background: #f6f4f8;
+      background: #f6f8fc;
       font-family: Arial, Helvetica, sans-serif;
-      color: #1d1b20;
+      color: #111827;
     }
   `
 
@@ -41,26 +54,6 @@ class AccountOrdersApp extends LitElement {
     super.connectedCallback()
 
     this.addEventListener(
-      'go-register',
-      this.handleRegisterPage
-    )
-
-    this.addEventListener(
-      'go-login',
-      this.handleLoginPage
-    )
-
-    this.addEventListener(
-      'login-user',
-      this.handleLogin
-    )
-
-    this.addEventListener(
-      'register-user',
-      this.handleRegister
-    )
-
-    this.addEventListener(
       'navigate-page',
       this.handleNavigation
     )
@@ -68,6 +61,11 @@ class AccountOrdersApp extends LitElement {
     this.addEventListener(
       'logout-user',
       this.handleLogout
+    )
+
+    this.addEventListener(
+      'update-profile',
+      this.handleProfileUpdate
     )
   }
 
@@ -75,26 +73,6 @@ class AccountOrdersApp extends LitElement {
     super.disconnectedCallback()
 
     this.removeEventListener(
-      'go-register',
-      this.handleRegisterPage
-    )
-
-    this.removeEventListener(
-      'go-login',
-      this.handleLoginPage
-    )
-
-    this.removeEventListener(
-      'login-user',
-      this.handleLogin
-    )
-
-    this.removeEventListener(
-      'register-user',
-      this.handleRegister
-    )
-
-    this.removeEventListener(
       'navigate-page',
       this.handleNavigation
     )
@@ -103,106 +81,79 @@ class AccountOrdersApp extends LitElement {
       'logout-user',
       this.handleLogout
     )
+
+    this.removeEventListener(
+      'update-profile',
+      this.handleProfileUpdate
+    )
   }
 
-  handleRegisterPage = () => {
-    this.page = 'register'
-  }
-
-  handleLoginPage = () => {
-    this.page = 'login'
-  }
-
- handleLogin = (event) => {
-  this.user = {
-    ...this.user,
-    email: event.detail.email
-  }
-
-  window.parent.postMessage(
-    {
-      type: 'NAVIGATE',
-      path: '/'
-    },
-    '*'
-  )
-}
-handleRegister = (event) => {
-  this.user = {
-    ...this.user,
-    name: event.detail.name,
-    email: event.detail.email
-  }
-
-  window.parent.postMessage(
-    {
-      type: 'NAVIGATE',
-      path: '/'
-    },
-    '*'
-  )
-}
   handleNavigation = (event) => {
     this.page = event.detail
   }
 
+  handleProfileUpdate = (event) => {
+    this.user = {
+      ...event.detail
+    }
+
+    this.hasProfileData = true
+
+    localStorage.setItem(
+      'hasProfileData',
+      'true'
+    )
+  }
+
   handleLogout = () => {
-    this.loggedIn = false
-    this.page = 'login'
+
+    this.user = {
+      name: '',
+      email: '',
+      phone: '',
+      address: ''
+    }
+
+    this.hasProfileData = false
+
+    localStorage.setItem(
+      'hasProfileData',
+      'false'
+    )
+
+    // يرجع Home تبعت Shell فرح
+    window.parent.postMessage(
+      {
+        type: 'NAVIGATE',
+        path: '/'
+      },
+      '*'
+    )
   }
 
   renderPage() {
-    switch (this.page) {
 
-      case 'profile':
-        return html`
-          <profile-page
-            .user=${this.user}>
-          </profile-page>
-        `
-
-      case 'orders':
-        return html`
-          <orders-page>
-          </orders-page>
-        `
-
-      case 'wishlist':
-        return html`
-          <wishlist-page>
-          </wishlist-page>
-        `
-
-      default:
-        return html`
-          <profile-page
-            .user=${this.user}>
-          </profile-page>
-        `
-    }
-  }
-
-  render() {
-
-    if (!this.loggedIn) {
-
-      if (this.page === 'register') {
-        return html`
-          <register-page>
-          </register-page>
-        `
-      }
-
+    if (this.page === 'orders') {
       return html`
-        <login-page>
-        </login-page>
+        <orders-page></orders-page>
+      `
+    }
+
+    if (this.page === 'wishlist') {
+      return html`
+        <wishlist-page></wishlist-page>
       `
     }
 
     return html`
-      <account-navbar>
-      </account-navbar>
+      <profile-page
+        .user=${this.user}>
+      </profile-page>
+    `
+  }
 
+  render() {
+    return html`
       ${this.renderPage()}
     `
   }

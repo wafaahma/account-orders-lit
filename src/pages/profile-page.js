@@ -2,6 +2,24 @@ import { LitElement, html, css } from 'lit'
 
 class ProfilePage extends LitElement {
 
+  static properties = {
+    user: { type: Object },
+    editing: { type: Boolean }
+  }
+
+  constructor() {
+    super()
+
+    this.editing = false
+
+    this.user = {
+      name: '',
+      email: '',
+      phone: '',
+      address: ''
+    }
+  }
+
   static styles = css`
     * {
       box-sizing: border-box;
@@ -11,59 +29,55 @@ class ProfilePage extends LitElement {
       display: block;
       min-height: 100vh;
       background: #f6f8fc;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       color: #111827;
     }
 
     main {
-      max-width: 950px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 50px 25px;
+      padding: 45px 25px;
     }
 
-    .title {
-      margin-bottom: 28px;
+    .welcome {
+      margin-bottom: 30px;
     }
 
-    h1 {
+    .welcome h1 {
       margin: 0 0 8px;
       font-size: 32px;
-      color: #111827;
+      color: #15233c;
     }
 
-    .subtitle {
+    .welcome p {
+      margin: 0;
       color: #64748b;
-      font-size: 16px;
     }
 
-    .card {
+    .profile-card {
       background: white;
       border: 1px solid #e5e7eb;
       border-radius: 18px;
-      padding: 36px;
+      padding: 30px;
+      margin-bottom: 30px;
 
       box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.05);
+        0 5px 18px rgba(0,0,0,0.04);
     }
 
-    .profile-top {
+    .profile-header {
       display: flex;
-      align-items: center;
-      gap: 18px;
-
-      padding-bottom: 28px;
-      margin-bottom: 28px;
-
-      border-bottom: 1px solid #e5e7eb;
+      gap: 25px;
+      align-items: flex-start;
     }
 
     .avatar {
-      width: 80px;
-      height: 80px;
+      width: 85px;
+      height: 85px;
+      min-width: 85px;
 
       border-radius: 50%;
-
-      background: #2563eb;
+      background: #2167dc;
       color: white;
 
       display: flex;
@@ -74,120 +88,234 @@ class ProfilePage extends LitElement {
       font-weight: bold;
     }
 
-    .profile-name h2 {
-      margin: 0 0 5px;
-      font-size: 22px;
+    .profile-details {
+      flex: 1;
     }
 
-    .profile-name p {
-      margin: 0;
+    .profile-details h2 {
+      margin: 0 0 14px;
+      color: #15233c;
+    }
+
+    .details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 30px;
+
       color: #64748b;
+      font-size: 14px;
     }
 
-    .form {
+    .details strong {
+      color: #374151;
+    }
+
+    .edit-profile {
+      margin-top: 18px;
+
+      padding: 10px 20px;
+
+      border: none;
+      border-radius: 8px;
+
+      background: #2167dc;
+      color: white;
+
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .edit-form {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 22px;
+      gap: 18px;
+
+      margin-top: 20px;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
 
-      color: #374151;
-
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
+      color: #374151;
     }
 
     input {
       width: 100%;
-
-      padding: 13px 14px;
+      padding: 11px;
 
       border: 1px solid #d1d5db;
-      border-radius: 9px;
+      border-radius: 8px;
 
-      background: white;
-
-      font-size: 15px;
       outline: none;
     }
 
     input:focus {
-      border-color: #2563eb;
-
-      box-shadow:
-        0 0 0 3px rgba(37, 99, 235, 0.08);
+      border-color: #2167dc;
     }
 
-    .actions {
+    .edit-actions {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+    }
 
-      gap: 15px;
-
-      margin-top: 30px;
+    .save,
+    .cancel {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
     }
 
     .save {
       border: none;
-      border-radius: 9px;
-
-      background: #2563eb;
+      background: #2167dc;
       color: white;
-
-      padding: 13px 24px;
-
-      font-size: 15px;
-      font-weight: 600;
-
-      cursor: pointer;
     }
 
-    .save:hover {
-      background: #1d4ed8;
-    }
-
-    .logout {
-      border: 1px solid #dc2626;
-      border-radius: 9px;
-
+    .cancel {
+      border: 1px solid #d1d5db;
       background: white;
-      color: #dc2626;
+      color: #374151;
+    }
 
-      padding: 12px 22px;
+    .section-title {
+      font-size: 20px;
+      color: #15233c;
+    }
 
-      font-size: 15px;
-      font-weight: 600;
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
 
+    .action-card {
+      background: white;
+
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+
+      padding: 25px;
+
+      text-align: left;
       cursor: pointer;
     }
 
-    .logout:hover {
-      background: #fef2f2;
+    .action-card:hover {
+      border-color: #2167dc;
+    }
+
+    .icon {
+      width: 45px;
+      height: 45px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 12px;
+
+      background: #eef4ff;
+
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+
+    .action-card h3 {
+      margin: 0 0 7px;
+      color: #15233c;
+    }
+
+    .action-card p {
+      margin: 0;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .logout-card:hover {
+      border-color: #dc2626;
     }
 
     @media (max-width: 700px) {
-      .form {
+      .profile-header {
+        flex-direction: column;
+      }
+
+      .edit-form {
         grid-template-columns: 1fr;
       }
 
-      .actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .save,
-      .logout {
-        width: 100%;
+      .actions-grid {
+        grid-template-columns: 1fr;
       }
     }
   `
 
-  save() {
+  startEdit() {
+    this.editing = true
+  }
+
+  cancelEdit() {
+    this.editing = false
+  }
+
+  saveProfile() {
+
+    const updatedUser = {
+      name:
+        this.shadowRoot
+          .querySelector('#name').value,
+
+      email:
+        this.shadowRoot
+          .querySelector('#email').value,
+
+      phone:
+        this.shadowRoot
+          .querySelector('#phone').value,
+
+      address:
+        this.shadowRoot
+          .querySelector('#address').value
+    }
+
+    this.user = updatedUser
+
+    this.editing = false
+
+    this.dispatchEvent(
+      new CustomEvent('update-profile', {
+        detail: updatedUser,
+        bubbles: true,
+        composed: true
+      })
+    )
+
     alert('Profile updated successfully')
+  }
+
+  openOrders() {
+    this.dispatchEvent(
+      new CustomEvent('navigate-page', {
+        detail: 'orders',
+        bubbles: true,
+        composed: true
+      })
+    )
+  }
+
+  openWishlist() {
+    this.dispatchEvent(
+      new CustomEvent('navigate-page', {
+        detail: 'wishlist',
+        bubbles: true,
+        composed: true
+      })
+    )
   }
 
   logout() {
@@ -200,114 +328,175 @@ class ProfilePage extends LitElement {
   }
 
   render() {
+
+    const hasData =
+      this.user &&
+      this.user.name
+
     return html`
       <main>
 
-        <div class="title">
+        <div class="welcome">
+          <h1>My Account</h1>
+          <p>Manage your profile, orders and wishlist</p>
+        </div>
 
-          <h1>My Profile</h1>
+        <div class="profile-card">
 
-          <div class="subtitle">
-            Manage your personal information
-          </div>
+          ${
+            hasData
+              ? html`
+                  <div class="profile-header">
+
+                    <div class="avatar">
+                      ${this.user.name
+                        .charAt(0)
+                        .toUpperCase()}
+                    </div>
+
+                    <div class="profile-details">
+
+                      <h2>
+                        ${this.user.name}
+                      </h2>
+
+                      ${
+                        !this.editing
+                          ? html`
+                              <div class="details">
+
+                                <div>
+                                  <strong>Email:</strong>
+                                  ${this.user.email}
+                                </div>
+
+                                <div>
+                                  <strong>Phone:</strong>
+                                  ${this.user.phone}
+                                </div>
+
+                                <div>
+                                  <strong>Address:</strong>
+                                  ${this.user.address}
+                                </div>
+
+                              </div>
+
+                              <button
+                                class="edit-profile"
+                                @click=${this.startEdit}>
+                                Edit Profile
+                              </button>
+                            `
+                          : html`
+                              <div class="edit-form">
+
+                                <div>
+                                  <label>Full Name</label>
+                                  <input
+                                    id="name"
+                                    .value=${this.user.name}>
+                                </div>
+
+                                <div>
+                                  <label>Email</label>
+                                  <input
+                                    id="email"
+                                    .value=${this.user.email}>
+                                </div>
+
+                                <div>
+                                  <label>Phone</label>
+                                  <input
+                                    id="phone"
+                                    .value=${this.user.phone}>
+                                </div>
+
+                                <div>
+                                  <label>Address</label>
+                                  <input
+                                    id="address"
+                                    .value=${this.user.address}>
+                                </div>
+
+                              </div>
+
+                              <div class="edit-actions">
+
+                                <button
+                                  class="save"
+                                  @click=${this.saveProfile}>
+                                  Save Changes
+                                </button>
+
+                                <button
+                                  class="cancel"
+                                  @click=${this.cancelEdit}>
+                                  Cancel
+                                </button>
+
+                              </div>
+                            `
+                      }
+
+                    </div>
+
+                  </div>
+                `
+              : html`
+                  <p>No profile information available.</p>
+                `
+          }
 
         </div>
 
-        <div class="card">
+        <h2 class="section-title">
+          Account
+        </h2>
 
-          <div class="profile-top">
+        <div class="actions-grid">
 
-            <div class="avatar">
-              W
-            </div>
+          <button
+            class="action-card"
+            @click=${this.openOrders}>
 
-            <div class="profile-name">
+            <div class="icon">📦</div>
 
-              <h2>
-                Wafaa Ahmad
-              </h2>
+            <h3>Orders</h3>
 
-              <p>
-                wafaa@gmail.com
-              </p>
+            <p>
+              View your previous orders
+            </p>
 
-            </div>
+          </button>
 
-          </div>
+          <button
+            class="action-card"
+            @click=${this.openWishlist}>
 
-          <div class="form">
+            <div class="icon">♡</div>
 
-            <div>
+            <h3>Wishlist</h3>
 
-              <label>
-                Full Name
-              </label>
+            <p>
+              View your saved products
+            </p>
 
-              <input
-                type="text"
-                value="Wafaa Ahmad"
-              >
+          </button>
 
-            </div>
+          <button
+            class="action-card logout-card"
+            @click=${this.logout}>
 
-            <div>
+            <div class="icon">↪</div>
 
-              <label>
-                Email
-              </label>
+            <h3>Logout</h3>
 
-              <input
-                type="email"
-                value="wafaa@gmail.com"
-              >
+            <p>
+              Sign out from your account
+            </p>
 
-            </div>
-
-            <div>
-
-              <label>
-                Phone
-              </label>
-
-              <input
-                type="text"
-                value="0590000000"
-              >
-
-            </div>
-
-            <div>
-
-              <label>
-                Address
-              </label>
-
-              <input
-                type="text"
-                value="Palestine"
-              >
-
-            </div>
-
-          </div>
-
-          <div class="actions">
-
-            <button
-              class="save"
-              @click=${this.save}
-            >
-              Save Changes
-            </button>
-
-            <button
-              class="logout"
-              @click=${this.logout}
-            >
-              Logout
-            </button>
-
-          </div>
+          </button>
 
         </div>
 
