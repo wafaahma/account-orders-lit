@@ -2,6 +2,12 @@ import { LitElement, html, css } from 'lit'
 
 class WishlistPage extends LitElement {
 
+  static properties = {
+    products: {
+      state: true
+    }
+  }
+
   static styles = css`
     * {
       box-sizing: border-box;
@@ -83,13 +89,26 @@ class WishlistPage extends LitElement {
       align-items: center;
       justify-content: center;
 
-      font-size: 45px;
-
       margin-bottom: 18px;
+
+      overflow: hidden;
+    }
+
+    .image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .category {
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 7px;
     }
 
     h3 {
       margin: 0 0 8px;
+      color: #15233c;
     }
 
     .price {
@@ -116,6 +135,10 @@ class WishlistPage extends LitElement {
       cursor: pointer;
     }
 
+    .cart-button:hover {
+      background: #1d4ed8;
+    }
+
     .empty {
       background: white;
 
@@ -128,6 +151,11 @@ class WishlistPage extends LitElement {
       color: #64748b;
     }
 
+    .empty-icon {
+      font-size: 45px;
+      margin-bottom: 15px;
+    }
+
     @media (max-width: 750px) {
       .products {
         grid-template-columns: 1fr;
@@ -135,13 +163,204 @@ class WishlistPage extends LitElement {
     }
   `
 
+  constructor() {
+    super()
+
+    this.products = []
+
+    this.handleWishlistUpdate =
+      this.handleWishlistUpdate.bind(this)
+
+    this.handleMessage =
+      this.handleMessage.bind(this)
+  }
+
+  connectedCallback() {
+    super.connectedCallback()
+
+    /*
+     * Receive wishlist event from Catalog
+     * when Catalog is in the same window.
+     */
+    window.addEventListener(
+      'ElectroShop:wishlist-updated',
+      this.handleWishlistUpdate
+    )
+
+    /*
+     * Receive message from Host
+     * when Microfrontends communicate
+     * through postMessage.
+     */
+    window.addEventListener(
+      'message',
+      this.handleMessage
+    )
+  }
+
+  disconnectedCallback() {
+
+    window.removeEventListener(
+      'ElectroShop:wishlist-updated',
+      this.handleWishlistUpdate
+    )
+
+    window.removeEventListener(
+      'message',
+      this.handleMessage
+    )
+
+    super.disconnectedCallback()
+  }
+
+  
+
+  handleWishlistUpdate(event) {
+
+    const detail =
+      event.detail || {}
+
+    const {
+      productId,
+      liked,
+      product
+    } = detail
+
+    if (!productId || !product) {
+      return
+    }
+
+    this.updateWishlist(
+      productId,
+      liked,
+      product
+    )
+  }
+
+  
+  handleMessage(event) {
+
+    const data = event.data
+
+    if (
+      !data ||
+      data.type !==
+        'ElectroShop:wishlist-updated'
+    ) {
+      return
+    }
+
+    const {
+      productId,
+      liked,
+      product
+    } = data
+
+    if (!productId || !product) {
+      return
+    }
+
+    this.updateWishlist(
+      productId,
+      liked,
+      product
+    )
+  }
+
+
+  updateWishlist(
+    productId,
+    liked,
+    product
+  ) {
+
+    if (liked === true) {
+
+      const exists =
+        this.products.some(
+          item =>
+            item.id === productId
+        )
+
+      if (!exists) {
+
+        this.products = [
+          ...this.products,
+          product
+        ]
+
+      }
+
+      return
+    }
+
+    if (liked === false) {
+
+      this.products =
+        this.products.filter(
+          item =>
+            item.id !== productId
+        )
+
+    }
+  }
+
+  
+  addToCart(product) {
+
+    /*
+     * Send event inside the same window
+     */
+    window.dispatchEvent(
+      new CustomEvent(
+        'ElectroShop:add-to-cart',
+        {
+          detail: {
+            productId: product.id,
+            delta: 1,
+            product
+          }
+        }
+      )
+    )
+
+    /*
+     * Send event to Host
+     */
+    if (
+      window.parent !== window
+    ) {
+
+      window.parent.postMessage(
+        {
+          type:
+            'ElectroShop:add-to-cart',
+
+          productId:
+            product.id,
+
+          delta: 1,
+
+          product
+        },
+        '*'
+      )
+
+    }
+  }
+
+  
   backToProfile() {
+
     this.dispatchEvent(
-      new CustomEvent('navigate-page', {
-        detail: 'profile',
-        bubbles: true,
-        composed: true
-      })
+      new CustomEvent(
+        'navigate-page',
+        {
+          detail: 'profile',
+          bubbles: true,
+          composed: true
+        }
+      )
     )
   }
 
@@ -153,97 +372,123 @@ class WishlistPage extends LitElement {
       ) === 'true'
 
     return html`
+
       <main>
 
         <button
           class="back-button"
-          @click=${this.backToProfile}>
+          @click=${this.backToProfile}
+        >
           ← Back to Profile
         </button>
 
-        <h1>My Wishlist</h1>
+        <h1>
+          My Wishlist
+        </h1>
 
         <div class="subtitle">
           Products you saved for later
         </div>
 
         ${
-          hasProfileData
+          !hasProfileData
             ? html`
-                <div class="products">
 
-                  <div class="product">
-
-                    <div class="image">
-                      🎧
-                    </div>
-
-                    <h3>
-                      Wireless Headphones
-                    </h3>
-
-                    <div class="price">
-                      $79.99
-                    </div>
-
-                    <button class="cart-button">
-                      Add to Cart
-                    </button>
-
-                  </div>
-
-                  <div class="product">
-
-                    <div class="image">
-                      ⌚
-                    </div>
-
-                    <h3>
-                      Smart Watch
-                    </h3>
-
-                    <div class="price">
-                      $149.99
-                    </div>
-
-                    <button class="cart-button">
-                      Add to Cart
-                    </button>
-
-                  </div>
-
-                  <div class="product">
-
-                    <div class="image">
-                      📱
-                    </div>
-
-                    <h3>
-                      Smartphone
-                    </h3>
-
-                    <div class="price">
-                      $699.99
-                    </div>
-
-                    <button class="cart-button">
-                      Add to Cart
-                    </button>
-
-                  </div>
-
-                </div>
-              `
-            : html`
                 <div class="empty">
-                  ♡
-                  <br><br>
+
+                  <div class="empty-icon">
+                    ♡
+                  </div>
+
                   Your wishlist is empty
+
                 </div>
+
               `
+            : this.products.length === 0
+              ? html`
+
+                  <div class="empty">
+
+                    <div class="empty-icon">
+                      ♡
+                    </div>
+
+                    Your wishlist is empty
+
+                  </div>
+
+                `
+              : html`
+
+                  <div class="products">
+
+                    ${
+                      this.products.map(
+                        product => html`
+
+                          <div
+                            class="product"
+                          >
+
+                            <div
+                              class="image"
+                            >
+
+                              <img
+                                src="${product.image}"
+                                alt="${product.name}"
+                              />
+
+                            </div>
+
+                            <div
+                              class="category"
+                            >
+                              ${
+                                product.category ||
+                                ''
+                              }
+                            </div>
+
+                            <h3>
+                              ${product.name}
+                            </h3>
+
+                            <div
+                              class="price"
+                            >
+                              ${
+                                typeof product.price ===
+                                'number'
+                                  ? `$${product.price}`
+                                  : product.price
+                              }
+                            </div>
+
+                            <button
+                              class="cart-button"
+                              @click=${() =>
+                                this.addToCart(
+                                  product
+                                )}
+                            >
+                              Add to Cart
+                            </button>
+
+                          </div>
+
+                        `
+                      )
+                    }
+
+                  </div>
+
+                `
         }
 
       </main>
+
     `
   }
 }
