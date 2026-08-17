@@ -1,218 +1,305 @@
-import { LitElement, html, css } from 'lit'
+import {
+  LitElement,
+  html,
+  css
+} from "lit";
 
-import './pages/login-page.js'
-import './pages/profile-page.js'
-import './pages/orders-page.js'
-import './pages/wishlist-page.js'
+import "./pages/login-page.js";
+import "./pages/profile-page.js";
+import "./pages/orders-page.js";
+import "./pages/wishlist-page.js";
 
-import { user as defaultUser }
-  from './data/mock-data.js'
+import {
+  user as defaultUser
+} from "./data/mock-data.js";
 
 class AccountOrdersApp extends LitElement {
 
   static properties = {
-    page: { type: String },
-    user: { type: Object },
-    hasProfileData: { type: Boolean }
-  }
+    page: {
+      type: String
+    },
+
+    user: {
+      type: Object
+    },
+
+    isLoggedIn: {
+      type: Boolean
+    }
+  };
 
   constructor() {
-    super()
+    super();
 
-    const path = window.location.pathname
+    const path =
+      window.location.pathname;
 
-    if (path === '/login') {
-      this.page = 'login'
-    } else if (path === '/orders') {
-      this.page = 'orders'
-    } else if (path === '/wishlist') {
-      this.page = 'wishlist'
+    this.isLoggedIn =
+      localStorage.getItem(
+        "ElectroShop:isLoggedIn"
+      ) === "true";
+
+    const savedUser =
+      localStorage.getItem(
+        "ElectroShop:user"
+      );
+
+    if (savedUser) {
+      try {
+        this.user = {
+          ...defaultUser,
+          ...JSON.parse(savedUser)
+        };
+      } catch {
+        this.user = {
+          name: "",
+          email: "",
+          phone: "",
+          address: ""
+        };
+      }
     } else {
-      this.page = 'profile'
+      this.user = {
+        name: "",
+        email: "",
+        phone: "",
+        address: ""
+      };
+    }
+
+    if (!this.isLoggedIn) {
+      this.page = "login";
+      return;
     }
 
     if (
-      localStorage.getItem('hasProfileData') === null
+      path === "/account/login" ||
+      path === "/account/register"
     ) {
-      localStorage.setItem(
-        'hasProfileData',
-        'true'
-      )
+      this.page = "login";
+      return;
     }
 
-    this.hasProfileData =
-      localStorage.getItem(
-        'hasProfileData'
-      ) === 'true'
-
-    if (this.hasProfileData) {
-      this.user = { ...defaultUser }
-    } else {
-      this.user = {
-        name: '',
-        email: '',
-        phone: '',
-        address: ''
-      }
+    if (
+      path === "/orders" ||
+      path === "/account/orders"
+    ) {
+      this.page = "orders";
+      return;
     }
+
+    if (
+      path === "/wishlist" ||
+      path === "/account/wishlist"
+    ) {
+      this.page = "wishlist";
+      return;
+    }
+
+    this.page = "profile";
   }
 
   static styles = css`
     :host {
       display: block;
+
       min-height: 100vh;
+
       background: #f6f8fc;
-      font-family: Arial, Helvetica, sans-serif;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
       color: #111827;
     }
-  `
+  `;
 
   connectedCallback() {
-    super.connectedCallback()
+    super.connectedCallback();
 
     this.addEventListener(
-      'login-user',
+      "login-user",
       this.handleLogin
-    )
+    );
 
     this.addEventListener(
-      'navigate-page',
+      "navigate-page",
       this.handleNavigation
-    )
+    );
 
     this.addEventListener(
-      'logout-user',
+      "logout-user",
       this.handleLogout
-    )
+    );
 
     this.addEventListener(
-      'update-profile',
+      "update-profile",
       this.handleProfileUpdate
-    )
+    );
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback()
-
     this.removeEventListener(
-      'login-user',
+      "login-user",
       this.handleLogin
-    )
+    );
 
     this.removeEventListener(
-      'navigate-page',
+      "navigate-page",
       this.handleNavigation
-    )
+    );
 
     this.removeEventListener(
-      'logout-user',
+      "logout-user",
       this.handleLogout
-    )
+    );
 
     this.removeEventListener(
-      'update-profile',
+      "update-profile",
       this.handleProfileUpdate
-    )
+    );
+
+    super.disconnectedCallback();
   }
 
   handleLogin = (event) => {
-    this.user = {
-      ...this.user,
-      email: event.detail.email
+    const email =
+      event.detail?.email;
+
+    if (!email) {
+      return;
     }
 
-    this.hasProfileData = true
+    this.isLoggedIn = true;
+
+    this.user = {
+      ...this.user,
+      email
+    };
 
     localStorage.setItem(
-      'hasProfileData',
-      'true'
-    )
+      "ElectroShop:isLoggedIn",
+      "true"
+    );
+
+    localStorage.setItem(
+      "ElectroShop:user",
+      JSON.stringify(
+        this.user
+      )
+    );
+
+    this.page = "profile";
 
     window.parent.postMessage(
       {
-        type: 'NAVIGATE',
-        path: '/'
+        type: "LOGIN_SUCCESS"
       },
-      '*'
-    )
-  }
+      "*"
+    );
+  };
 
   handleNavigation = (event) => {
-    this.page = event.detail
-  }
+    if (!this.isLoggedIn) {
+      this.page = "login";
+      return;
+    }
+
+    const page =
+      event.detail;
+
+    if (page === "orders") {
+      this.page = "orders";
+      return;
+    }
+
+    if (page === "wishlist") {
+      this.page = "wishlist";
+      return;
+    }
+
+    this.page = "profile";
+  };
 
   handleProfileUpdate = (event) => {
     this.user = {
+      ...this.user,
       ...event.detail
-    }
-
-    this.hasProfileData = true
+    };
 
     localStorage.setItem(
-      'hasProfileData',
-      'true'
-    )
-  }
+      "ElectroShop:user",
+      JSON.stringify(
+        this.user
+      )
+    );
+  };
 
   handleLogout = () => {
+    this.isLoggedIn = false;
+
     this.user = {
-      name: '',
-      email: '',
-      phone: '',
-      address: ''
-    }
+      name: "",
+      email: "",
+      phone: "",
+      address: ""
+    };
 
-    this.hasProfileData = false
+    localStorage.removeItem(
+      "ElectroShop:isLoggedIn"
+    );
 
-    localStorage.setItem(
-      'hasProfileData',
-      'false'
-    )
+    localStorage.removeItem(
+      "ElectroShop:user"
+    );
+
+    this.page = "login";
 
     window.parent.postMessage(
       {
-        type: 'NAVIGATE',
-        path: '/'
+        type: "LOGOUT"
       },
-      '*'
-    )
-  }
+      "*"
+    );
+  };
 
   renderPage() {
-
-    if (this.page === 'login') {
+    if (!this.isLoggedIn) {
       return html`
         <login-page></login-page>
-      `
+      `;
     }
 
-    if (this.page === 'orders') {
+    if (this.page === "orders") {
       return html`
         <orders-page></orders-page>
-      `
+      `;
     }
 
-    if (this.page === 'wishlist') {
+    if (this.page === "wishlist") {
       return html`
         <wishlist-page></wishlist-page>
-      `
+      `;
     }
 
     return html`
       <profile-page
         .user=${this.user}>
       </profile-page>
-    `
+    `;
   }
 
   render() {
     return html`
       ${this.renderPage()}
-    `
+    `;
   }
 }
 
 customElements.define(
-  'account-orders-app',
+  "account-orders-app",
   AccountOrdersApp
-)
+);

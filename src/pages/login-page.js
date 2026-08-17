@@ -1,11 +1,10 @@
-import { LitElement, html, css } from 'lit'
+import { LitElement, html, css } from "lit";
 
-import '@material/web/textfield/outlined-text-field.js'
-import '@material/web/button/filled-button.js'
-import '@material/web/button/text-button.js'
+import "@material/web/textfield/outlined-text-field.js";
+import "@material/web/button/filled-button.js";
+import "@material/web/button/text-button.js";
 
 class LoginPage extends LitElement {
-
   static styles = css`
     * {
       box-sizing: border-box;
@@ -15,7 +14,7 @@ class LoginPage extends LitElement {
       display: block;
       min-height: 100vh;
       background: #f6f8fc;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       padding-top: 1px;
     }
 
@@ -24,7 +23,7 @@ class LoginPage extends LitElement {
       max-width: 90%;
       margin: 80px auto;
       padding: 40px;
-      background: white;
+      background: #ffffff;
       border: 1px solid #e5e7eb;
       border-radius: 16px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
@@ -34,27 +33,38 @@ class LoginPage extends LitElement {
       width: 52px;
       height: 52px;
       margin: 0 auto 20px;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       background: #2167dc;
-      color: white;
+      color: #ffffff;
+
       border-radius: 14px;
+
       font-size: 24px;
       font-weight: 800;
     }
 
     h1 {
       margin: 0 0 8px;
+
       text-align: center;
+
       font-size: 30px;
+      font-weight: 700;
+
       color: #15233c;
     }
 
     .subtitle {
-      color: #64748b;
       margin-bottom: 28px;
+
+      color: #64748b;
+
       font-size: 15px;
+
       text-align: center;
     }
 
@@ -65,26 +75,30 @@ class LoginPage extends LitElement {
 
     md-outlined-text-field {
       width: 100%;
-      --md-outlined-text-field-focus-outline-color: #2563eb;
-      --md-outlined-text-field-focus-label-text-color: #2563eb;
+
+      --md-outlined-text-field-focus-outline-color: #2167dc;
+      --md-outlined-text-field-focus-label-text-color: #2167dc;
     }
 
     md-filled-button {
       width: 100%;
-      --md-filled-button-container-color: #2563eb;
-      --md-filled-button-label-text-color: white;
-      --md-filled-button-container-height: 48px;
+
+      --md-filled-button-container-color: #2167dc;
+      --md-filled-button-label-text-color: #ffffff;
     }
 
     .register {
       margin-top: 24px;
+
       text-align: center;
+
       color: #64748b;
+
       font-size: 14px;
     }
 
     md-text-button {
-      --md-text-button-label-text-color: #2563eb;
+      --md-text-button-label-text-color: #2167dc;
     }
 
     @media (max-width: 500px) {
@@ -97,84 +111,88 @@ class LoginPage extends LitElement {
         font-size: 26px;
       }
     }
-  `
+  `;
 
   login(event) {
+    event.preventDefault();
 
-    event.preventDefault()
+    const form = event.currentTarget;
 
-    const form = event.target
-    const data = new FormData(form)
+    const data = new FormData(form);
 
     const email =
-      data.get('email')?.toString().trim()
+      data.get("email")?.toString().trim();
 
     const password =
-      data.get('password')?.toString()
+      data.get("password")?.toString();
 
     if (!email || !password) {
-      alert('Please enter email and password')
-      return
+      alert(
+        "Please enter email and password"
+      );
+
+      return;
+    }
+
+    const savedUser =
+      localStorage.getItem(
+        "ElectroShop:user"
+      );
+
+    let user = {
+      email,
+    };
+
+    if (savedUser) {
+      try {
+        user = {
+          ...JSON.parse(savedUser),
+          email,
+        };
+      } catch {
+        user = {
+          email,
+        };
+      }
     }
 
     localStorage.setItem(
-      'ElectroShop:isLoggedIn',
-      'true'
-    )
+      "ElectroShop:isLoggedIn",
+      "true"
+    );
 
     localStorage.setItem(
-      'ElectroShop:user',
-      JSON.stringify({
-        email: email
-      })
-    )
-
-    window.parent.postMessage(
-      {
-        type: 'LOGIN_SUCCESS'
-      },
-      '*'
-    )
+      "ElectroShop:user",
+      JSON.stringify(user)
+    );
 
     this.dispatchEvent(
       new CustomEvent(
-        'login-user',
+        "login-user",
         {
           detail: {
-            email: email
+            email,
           },
+
           bubbles: true,
-          composed: true
+          composed: true,
         }
       )
-    )
+    );
   }
 
   register() {
-
     window.parent.postMessage(
       {
-        type: 'NAVIGATE',
-        path: '/account/register'
+        type: "NAVIGATE",
+        path: "/account/register",
       },
-      '*'
-    )
-
-    this.dispatchEvent(
-      new CustomEvent(
-        'go-register',
-        {
-          bubbles: true,
-          composed: true
-        }
-      )
-    )
+      "*"
+    );
   }
 
   render() {
-
     return html`
-
       <div class="card">
 
         <div class="logo">
@@ -205,7 +223,8 @@ class LoginPage extends LitElement {
             required>
           </md-outlined-text-field>
 
-          <md-filled-button type="submit">
+          <md-filled-button
+            type="submit">
             Login
           </md-filled-button>
 
@@ -223,12 +242,11 @@ class LoginPage extends LitElement {
         </div>
 
       </div>
-
-    `
+    `;
   }
 }
 
 customElements.define(
-  'login-page',
+  "login-page",
   LoginPage
-)
+);
