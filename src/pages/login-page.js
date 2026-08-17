@@ -22,58 +22,39 @@ class LoginPage extends LitElement {
     .card {
       width: 430px;
       max-width: 90%;
-
       margin: 80px auto;
-
       padding: 40px;
-
       background: white;
-
       border: 1px solid #e5e7eb;
-
       border-radius: 16px;
-
-      box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
     }
 
     .logo {
       width: 52px;
       height: 52px;
-
       margin: 0 auto 20px;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       background: #2167dc;
-
       color: white;
-
       border-radius: 14px;
-
       font-size: 24px;
       font-weight: 800;
     }
 
     h1 {
       margin: 0 0 8px;
-
       text-align: center;
-
       font-size: 30px;
-
       color: #15233c;
     }
 
     .subtitle {
       color: #64748b;
-
       margin-bottom: 28px;
-
       font-size: 15px;
-
       text-align: center;
     }
 
@@ -84,47 +65,31 @@ class LoginPage extends LitElement {
 
     md-outlined-text-field {
       width: 100%;
-
-      --md-outlined-text-field-focus-outline-color:
-        #2563eb;
-
-      --md-outlined-text-field-focus-label-text-color:
-        #2563eb;
+      --md-outlined-text-field-focus-outline-color: #2563eb;
+      --md-outlined-text-field-focus-label-text-color: #2563eb;
     }
 
     md-filled-button {
       width: 100%;
-
-      --md-filled-button-container-color:
-        #2563eb;
-
-      --md-filled-button-label-text-color:
-        white;
-
-      --md-filled-button-container-height:
-        48px;
+      --md-filled-button-container-color: #2563eb;
+      --md-filled-button-label-text-color: white;
+      --md-filled-button-container-height: 48px;
     }
 
     .register {
       margin-top: 24px;
-
       text-align: center;
-
       color: #64748b;
-
       font-size: 14px;
     }
 
     md-text-button {
-      --md-text-button-label-text-color:
-        #2563eb;
+      --md-text-button-label-text-color: #2563eb;
     }
 
     @media (max-width: 500px) {
-
       .card {
         padding: 30px 22px;
-
         margin-top: 50px;
       }
 
@@ -134,40 +99,28 @@ class LoginPage extends LitElement {
     }
   `
 
-  
-
   login(event) {
 
     event.preventDefault()
 
-    const data =
-      new FormData(event.target)
+    const form = event.target
+    const data = new FormData(form)
 
     const email =
-      data.get('email')
+      data.get('email')?.toString().trim()
 
     const password =
-      data.get('password')
-
-    
+      data.get('password')?.toString()
 
     if (!email || !password) {
-
-      alert(
-        'Please enter email and password'
-      )
-
+      alert('Please enter email and password')
       return
     }
-
-   
 
     localStorage.setItem(
       'ElectroShop:isLoggedIn',
       'true'
     )
-
-    
 
     localStorage.setItem(
       'ElectroShop:user',
@@ -176,17 +129,12 @@ class LoginPage extends LitElement {
       })
     )
 
-    
-
     window.parent.postMessage(
       {
-        type: 'NAVIGATE',
-        path: '/'
+        type: 'LOGIN_SUCCESS'
       },
       '*'
     )
-
-    
 
     this.dispatchEvent(
       new CustomEvent(
@@ -195,24 +143,19 @@ class LoginPage extends LitElement {
           detail: {
             email: email
           },
-
           bubbles: true,
-
           composed: true
         }
       )
     )
   }
 
-  
   register() {
 
     window.parent.postMessage(
       {
         type: 'NAVIGATE',
-
-        path:
-          '/account/register'
+        path: '/account/register'
       },
       '*'
     )
@@ -228,20 +171,15 @@ class LoginPage extends LitElement {
     )
   }
 
-
   render() {
 
     return html`
 
       <div class="card">
 
-        <!-- LOGO -->
-
         <div class="logo">
           E
         </div>
-
-        <!-- TITLE -->
 
         <h1>
           Login
@@ -251,13 +189,7 @@ class LoginPage extends LitElement {
           Sign in to your ElectroShop account
         </div>
 
-        <!-- FORM -->
-
-        <form
-          @submit=${this.login}
-        >
-
-          <!-- EMAIL -->
+        <form @submit=${this.login}>
 
           <md-outlined-text-field
             label="Email"
@@ -266,8 +198,6 @@ class LoginPage extends LitElement {
             required>
           </md-outlined-text-field>
 
-          <!-- PASSWORD -->
-
           <md-outlined-text-field
             label="Password"
             name="password"
@@ -275,18 +205,11 @@ class LoginPage extends LitElement {
             required>
           </md-outlined-text-field>
 
-          <!-- LOGIN -->
-
-          <md-filled-button
-            type="submit">
-
+          <md-filled-button type="submit">
             Login
-
           </md-filled-button>
 
         </form>
-
-        <!-- REGISTER -->
 
         <div class="register">
 
@@ -294,14 +217,13 @@ class LoginPage extends LitElement {
 
           <md-text-button
             @click=${this.register}>
-
             Register
-
           </md-text-button>
 
         </div>
 
       </div>
+
     `
   }
 }
